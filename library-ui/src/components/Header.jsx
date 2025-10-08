@@ -1,68 +1,100 @@
 import { useState, useEffect } from "react";
-import { login, logout, getCurrentUser } from "../utils/dspace";
+import { login, logout} from "../utils/dspace";
+import { Bell, Search } from "lucide-react";
+import Login from "./Login";
 
 export default function Header() {
   const [user, setUser] = useState(null);
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
 
+  // Fetch current user on mount
   useEffect(() => {
-    async function checkUser() {
-      const u = await getCurrentUser();
-      setUser(u);
-    }
-    checkUser();
+    const fetchUser = async () => {
+      try {
+        const currentUser = await getCurrentUser();
+        setUser(currentUser);
+      } catch (err) {
+        console.error("Failed to fetch user:", err);
+      }
+    };
+    fetchUser();
   }, []);
 
-  const handleLogin = async () => {
-    const email = prompt("Enter your email:");
-    const password = prompt("Enter your password:");
+  // Handle login
+  const handleLogin = async (email, password) => {
     try {
       await login(email, password);
-      const u = await getCurrentUser();
-      setUser(u);
+      const currentUser = await getCurrentUser();
+      setUser(currentUser);
+      setShowLoginPopup(false);
     } catch (err) {
-      alert("Login failed!");
+      alert("Login failed! Please check your credentials.");
+      console.error(err);
     }
   };
 
+  // Handle logout
   const handleLogout = async () => {
-    await logout();
-    setUser(null);
+    try {
+      await logout();
+      setUser(null);
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
   };
 
   return (
-    <header className="header">
-      <nav className="nav-container">
-        <div className="logo">
-          <div className="logo-icon">
-            <img src="BGU-Logo.jpg" alt="Birla Global University" />
+    <>
+      <header className="header">
+        <nav className="nav-container">
+          <div className="logo">
+            <div className="logo-icon">
+              <img src="BGU-Logo.jpg" alt="Birla Global University" />
+            </div>
           </div>
-        </div>
 
-        <div className="nav-links">
-          <a href="#">Communities & Collections</a>
-          <a href="#">Browse Repository</a>
-          <a href="#">Statistics</a>
-        </div>
+          <div className="nav-links">
+            <a href="#">Communities & Collections</a>
+            <a href="#">Browse Repository</a>
+            <a href="#">Statistics</a>
+          </div>
 
-        <div className="nav-right">
-          <button className="icon-btn">🔍</button>
-          <button className="icon-btn">🔔</button>
-          {user ? (
-            <>
-              <span style={{ marginRight: "1rem" }}>
-                👋 {user?.name || "User"}
-              </span>
-              <button className="login-btn" onClick={handleLogout}>
-                Log Out
-              </button>
-            </>
-          ) : (
-            <button className="login-btn" onClick={handleLogin}>
-              Log In
+          <div className="nav-right">
+            <button className="icon-btn">
+              <Search />
             </button>
-          )}
-        </div>
-      </nav>
-    </header>
+            <button className="icon-btn">
+              <Bell />
+            </button>
+            {user ? (
+              <>
+                <span style={{ marginRight: "1rem" }}>
+                  👋 {user.name || "User"}
+                </span>
+                <button className="login-btn" onClick={handleLogout}>
+                  Log Out
+                </button>
+              </>
+            ) : (
+              <button
+                className="login-btn"
+                onClick={() => setShowLoginPopup(true)}
+              >
+                Log In
+              </button>
+            )}
+          </div>
+        </nav>
+      </header>
+
+      {/* Render login popup only when open */}
+      {showLoginPopup && (
+        <Login
+          isOpen={showLoginPopup}
+          onClose={() => setShowLoginPopup(false)}
+          onLogin={handleLogin}
+        />
+      )}
+    </>
   );
 }
