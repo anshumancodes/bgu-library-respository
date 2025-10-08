@@ -225,7 +225,7 @@ body {
 }
 
 .hero {
-  background-image: url("campus_bg_banner.jpg");
+  background-image: url("bgu-image.png");
   background-size: cover; /* Scale to fill */
   background-position: center; /* Center the image */
   background-repeat: no-repeat; /* Don't tile the image */
