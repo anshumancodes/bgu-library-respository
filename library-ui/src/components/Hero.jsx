@@ -40,13 +40,9 @@ export default function Hero() {
         
           <h1>Repository of Birla Global University</h1>
           <p className="hero-subtitle">
-            Advancing Knowledge Through Digital Scholarship
+            Advancing Knowledge Through Digital Scholarship - An Initiative By Central Library , Birla Global University
           </p>
-          <p className="hero-description">
-            The Institutional Repository of Birla Global University is designed
-            to collect, safeguard, and share the university's scholarly
-            contributions.
-          </p>
+         
      
 
         {/* Feature cards stay the same */}
