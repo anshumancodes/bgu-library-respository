@@ -263,7 +263,7 @@ body {
   padding: 0.5rem 1rem;
   border-radius: 50px;
   font-size: 0.9rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1vh;
   animation: slideDown 0.8s ease-out 0.2s both;
 }
 .blur-bg-custom{
@@ -273,7 +273,6 @@ body {
 .hero h1 {
   font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 700;
-  margin-bottom: 1.5rem;
   line-height: 1.1;
   animation: slideDown 0.8s ease-out 0.4s both;
 }
@@ -282,8 +281,9 @@ body {
   font-size: 1.25rem;
   opacity: 0.9;
   margin-bottom: 2rem;
-  max-width: 600px;
+  max-width: fit-content;
   animation: slideDown 0.8s ease-out 0.6s both;
+
 }
 
 .hero-description {
@@ -346,6 +346,7 @@ body {
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(10px);
   padding: 1.5rem;
+  margin-top: 20vh;
   border-radius: 16px;
   border: 1px solid rgba(0, 0, 0, 0.2);
   display: grid;
@@ -903,6 +904,7 @@ body {
 
   .stats-row {
     grid-template-columns: repeat(2, 1fr);
+    
   }
 
   .main-content {
