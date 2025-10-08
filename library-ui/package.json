@@ -1,5 +1,6 @@
 {
   "name": "library-ui",
+  "proxy": "http://10.120.4.59:8080",
   "private": true,
   "version": "0.0.0",
   "type": "module",
