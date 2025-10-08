@@ -103,8 +103,8 @@ body {
 }
 
 .logo-icon {
-  width: 100px;
-  height: 40px;
+  width: 200px;
+  height: 80px;
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -209,9 +209,9 @@ body {
 }
 
 .login-btn {
-  background: var(--gradient-primary);
+  background: var(--secondary-blue);
   color: white;
-  padding: 0.5rem 1rem;
+  padding: 1vh 2vw;
   border: none;
   border-radius: 8px;
   font-weight: 500;
