@@ -1,6 +1,6 @@
 import { useState } from "react";
 // import { searchPublications } from "../utils/dspace";
-
+import { User,Search } from "lucide-react";
 export default function SearchSection() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
@@ -41,7 +41,7 @@ export default function SearchSection() {
     <section className="search-section card">
       <div className="card-header">
         <h2 className="card-title">
-          <span>🔍</span> Explore Repository
+          <span><Search/></span> Explore Repository
         </h2>
         <p className="card-subtitle">
           Search through thousands of academic resources
@@ -50,7 +50,7 @@ export default function SearchSection() {
 
       <div className="card-content">
         <div className="search-container">
-          <div className="search-icon">🔍</div>
+          <div className="search-icon"><Search/></div>
           <input
             type="text"
             className="search-input"
@@ -89,7 +89,7 @@ export default function SearchSection() {
           {results.map((r) => (
             <div key={r.id} className="search-item">
               <h4>{r.title}</h4>
-              <p>👤 {r.author}</p>
+              <p><User/> {r.author}</p>
             </div>
           ))}
         </div>
