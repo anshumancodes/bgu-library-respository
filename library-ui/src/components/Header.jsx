@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
-import { login, logout} from "../utils/dspace";
-import { Bell, Search } from "lucide-react";
+import { Menu, X, Bell, Search } from "lucide-react";
+import { login, logout, getCurrentUser } from "../utils/dspace";
 import Login from "./Login";
 
 export default function Header() {
   const [user, setUser] = useState(null);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  // Fetch current user on mount
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -20,7 +20,6 @@ export default function Header() {
     fetchUser();
   }, []);
 
-  // Handle login
   const handleLogin = async (email, password) => {
     try {
       await login(email, password);
@@ -29,11 +28,9 @@ export default function Header() {
       setShowLoginPopup(false);
     } catch (err) {
       alert("Login failed! Please check your credentials.");
-      console.error(err);
     }
   };
 
-  // Handle logout
   const handleLogout = async () => {
     try {
       await logout();
@@ -45,49 +42,110 @@ export default function Header() {
 
   return (
     <>
-      <header className="header">
-        <nav className="nav-container">
-          <div className="logo">
-            <div className="logo-icon">
-              <img src="BGU-Logo.jpg" alt="Birla Global University" />
+      <header className="sticky top-0 z-50 backdrop-blur-md bg-white/70 border-b border-gray-200 transition-all">
+        <nav className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3 md:py-4">
+          {/* Logo */}
+          <div className="flex items-center gap-3 hover:scale-105 transition-transform">
+            <div className="relative md:w-full  h-10 md:h-24 rounded overflow-hidden shadow-md">
+              <img
+                src="BGU-Logo.jpg"
+                alt="Birla Global University"
+                className="object-cover w-full h-full"
+              />
             </div>
           </div>
 
-          <div className="nav-links">
-            <a href="#">Communities & Collections</a>
-            <a href="#">Browse Repository</a>
-            <a href="#">Statistics</a>
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center gap-8">
+            <a
+              href="#"
+              className="text-gray-700 font-medium relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-blue-600 hover:after:w-full after:transition-all hover:text-blue-600"
+            >
+              Communities & Collections
+            </a>
+            <a
+              href="#"
+              className="text-gray-700 font-medium relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-blue-600 hover:after:w-full after:transition-all hover:text-blue-600"
+            >
+              Browse Repository
+            </a>
+            <a
+              href="#"
+              className="text-gray-700 font-medium relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-blue-600 hover:after:w-full after:transition-all hover:text-blue-600"
+            >
+              Statistics
+            </a>
           </div>
 
-          <div className="nav-right">
-            <button className="icon-btn">
-              <Search />
+          {/* Right section */}
+          <div className="flex items-center gap-3">
+            <button className="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-200 bg-gray-50 hover:bg-blue-600 hover:text-white transition-all shadow-sm">
+              <Search size={18} />
             </button>
-            <button className="icon-btn">
-              <Bell />
-            </button>
+          
+
             {user ? (
-              <>
-                <span style={{ marginRight: "1rem" }}>
+              <div className="flex items-center gap-3">
+                <span className="hidden sm:inline-block text-gray-700">
                   👋 {user.name || "User"}
                 </span>
-                <button className="login-btn" onClick={handleLogout}>
+                <button
+                  onClick={handleLogout}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:-translate-y-0.5 hover:shadow-md transition-all"
+                >
                   Log Out
                 </button>
-              </>
+              </div>
             ) : (
               <button
-                className="login-btn"
                 onClick={() => setShowLoginPopup(true)}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:-translate-y-0.5 hover:shadow-md transition-all"
+              >
+                Log In
+              </button>
+            )}
+
+            {/* Hamburger */}
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="md:hidden p-2 rounded-lg border border-gray-200 bg-gray-50 hover:bg-blue-600 hover:text-white transition-all"
+            >
+              {menuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
+        </nav>
+
+        {/* Mobile Menu */}
+        {menuOpen && (
+          <div className="md:hidden bg-white/80 backdrop-blur-md border-t border-gray-200 px-6 py-4 space-y-4 flex flex-col">
+            <a href="#" className="text-gray-700 font-medium hover:text-blue-600">
+              Communities & Collections
+            </a>
+            <a href="#" className="text-gray-700 font-medium hover:text-blue-600">
+              Browse Repository
+            </a>
+            <a href="#" className="text-gray-700 font-medium hover:text-blue-600">
+              Statistics
+            </a>
+            {user ? (
+              <button
+                onClick={handleLogout}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:-translate-y-0.5 hover:shadow-md transition-all w-full"
+              >
+                Log Out
+              </button>
+            ) : (
+              <button
+                onClick={() => setShowLoginPopup(true)}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:-translate-y-0.5 hover:shadow-md transition-all w-full"
               >
                 Log In
               </button>
             )}
           </div>
-        </nav>
+        )}
       </header>
 
-      {/* Render login popup only when open */}
       {showLoginPopup && (
         <Login
           isOpen={showLoginPopup}
