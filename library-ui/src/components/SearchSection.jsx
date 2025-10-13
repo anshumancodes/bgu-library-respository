@@ -60,7 +60,10 @@ export default function SearchSection() {
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch(activeFilter)}
           />
-          <button className="search-btn" onClick={() => handleSearch(activeFilter)}>
+          <button
+            className="search-btn"
+            onClick={() => handleSearch(activeFilter)}
+          >
             Search
           </button>
         </div>
@@ -84,13 +87,14 @@ export default function SearchSection() {
           style={{ maxHeight: "400px", overflowY: "auto" }}
         >
           {loading && <p>Loading...</p>}
-          {!loading && results.length === 0 && <p>No results. Try another keyword.</p>}
+          {!loading && results.length === 0 && (
+            <p>No results. Try another keyword.</p>
+          )}
 
           {results.map((r) => (
             <div
               key={r.id}
-              className="search-item"
-              style={{ cursor: "pointer" }}
+              className="search-item p-4 mb-3 bg-white rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer border border-gray-200"
               onClick={async () => {
                 try {
                   // Fetch full item info to get bitstream
@@ -113,9 +117,11 @@ export default function SearchSection() {
                 }
               }}
             >
-              <h4>{r.title}</h4>
-              <p>
-                <User /> {r.author}
+              <h4 className="text-lg font-semibold text-gray-800 mb-1">
+                {r.title}
+              </h4>
+              <p className="text-sm text-gray-500 flex items-center gap-1">
+                <User className="w-4 h-4 text-gray-400" /> {r.author}
               </p>
             </div>
           ))}
@@ -138,12 +144,19 @@ export async function searchPublications(query) {
     if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
 
     const data = await res.json();
-    return (data._embedded?.searchResult?._embedded?.objects || []).map((obj) => ({
-      id: obj._embedded.indexableObject?.uuid,
-      title: obj._embedded.indexableObject?.metadata?.["dc.title"]?.[0]?.value || "Untitled",
-      author: obj._embedded.indexableObject?.metadata?.["dc.contributor.author"]?.[0]?.value || "Unknown",
-      selfHref: obj._embedded.indexableObject?._links?.self?.href,
-    }));
+    return (data._embedded?.searchResult?._embedded?.objects || []).map(
+      (obj) => ({
+        id: obj._embedded.indexableObject?.uuid,
+        title:
+          obj._embedded.indexableObject?.metadata?.["dc.title"]?.[0]?.value ||
+          "Untitled",
+        author:
+          obj._embedded.indexableObject?.metadata?.[
+            "dc.contributor.author"
+          ]?.[0]?.value || "Unknown",
+        selfHref: obj._embedded.indexableObject?._links?.self?.href,
+      })
+    );
   } catch (err) {
     console.error("Error fetching search results:", err);
     return [];
