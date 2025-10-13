@@ -1,15 +1,23 @@
 import { useState } from "react";
-import { searchPublications } from "../utils/dspace";
+// import { searchPublications } from "../utils/dspace";
 
 export default function SearchSection() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [activeFilter, setActiveFilter] = useState("All");
 
-  const handleSearch = async () => {
+  const handleSearch = async (filter = "All") => {
+    if (!query.trim() && filter === "All") {
+      setResults([]);
+      return;
+    }
+
     setLoading(true);
+    setActiveFilter(filter);
+
     try {
-      const data = await searchPublications(query);
+      const data = await searchPublications(query, filter);
       const formatted = data.map((obj) => {
         const md = obj._embedded.indexableObject?.metadata || {};
         return {
@@ -21,10 +29,13 @@ export default function SearchSection() {
       setResults(formatted);
     } catch (err) {
       console.error("Search error:", err);
+      setResults([]);
     } finally {
       setLoading(false);
     }
   };
+
+  const filters = ["All", "Research Papers", "Theses", "Datasets"];
 
   return (
     <section className="search-section card">
@@ -36,6 +47,7 @@ export default function SearchSection() {
           Search through thousands of academic resources
         </p>
       </div>
+
       <div className="card-content">
         <div className="search-container">
           <div className="search-icon">🔍</div>
@@ -45,33 +57,35 @@ export default function SearchSection() {
             placeholder="Search publications, authors, keywords..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch(activeFilter)}
           />
-          <button className="search-btn" onClick={handleSearch}>
+          <button className="search-btn" onClick={() => handleSearch(activeFilter)}>
             Search
           </button>
         </div>
+
         <div className="filter-tags">
-          <span
-            className="filter-tag active"
-            onClick={() => {
-              setQuery("");
-              handleSearch();
-            }}
-          >
-            All
-          </span>
-          <span className="filter-tag">Research Papers</span>
-          <span className="filter-tag">Theses</span>
-          <span className="filter-tag">Datasets</span>
+          {filters.map((f) => (
+            <span
+              key={f}
+              className={`filter-tag ${activeFilter === f ? "active" : ""}`}
+              onClick={() => handleSearch(f)}
+            >
+              {f}
+            </span>
+          ))}
         </div>
 
-        {/* Results */}
-        <div className="search-results">
+        <div
+          className="search-results"
+          style={{
+            maxHeight: "400px", // make results scrollable if too long
+            overflowY: "auto",
+          }}
+        >
           {loading && <p>Loading...</p>}
-          {!loading && results.length === 0 && (
-            <p>No results. Try another keyword.</p>
-          )}
+          {!loading && results.length === 0 && <p>No results. Try another keyword.</p>}
+
           {results.map((r) => (
             <div key={r.id} className="search-item">
               <h4>{r.title}</h4>
@@ -82,4 +96,23 @@ export default function SearchSection() {
       </div>
     </section>
   );
+}
+export async function searchPublications(query) {
+  if (!query || !query.trim()) return [];
+
+  const url = `http://10.120.4.59:8080/server/api/discover/search/objects?query=${encodeURIComponent(query)}`;
+
+  try {
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error(`HTTP error! Status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    // Navigate to the actual search results
+    return data._embedded?.searchResult?._embedded?.objects || [];
+  } catch (err) {
+    console.error("Error fetching search results:", err);
+    return [];
+  }
 }
