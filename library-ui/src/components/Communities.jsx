@@ -1,4 +1,4 @@
-import { Library } from "lucide-react";
+import { BookDashed, Library } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function Communities() {
@@ -64,7 +64,7 @@ export default function Communities() {
 
         {communities.map((c) => (
           <div key={c.id} className="community-card">
-            <div className="community-icon"><Books/></div>
+            <div className="community-icon"><BookDashed/></div>
             <div className="community-name">{c.name}</div>
             <div className="community-count">
               {c.itemsCount} items • {c.collectionsCount} collections
