@@ -1,3 +1,4 @@
+import { Library } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function Communities() {
@@ -48,25 +49,22 @@ export default function Communities() {
       <div className="card-header">
         <div className="communities-header">
           <div>
-            <h2 className="card-title">🏛️ Academic Communities</h2>
+            <h2 className="card-title"> <Library/> Academic Communities</h2>
             <p className="card-subtitle">
               Explore research by academic departments
             </p>
           </div>
-          <div className="view-toggle">
-            <button className="view-btn active">📋</button>
-            <button className="view-btn">🔳</button>
-          </div>
+          
         </div>
       </div>
 
-      <div className="card-content">
+      <div className="card-content max-h-[500px] overflow-y-auto">
         {loading && <p>Loading...</p>}
         {!loading && communities.length === 0 && <p>No communities found.</p>}
 
         {communities.map((c) => (
           <div key={c.id} className="community-card">
-            <div className="community-icon">🎓</div>
+            <div className="community-icon"><Books/></div>
             <div className="community-name">{c.name}</div>
             <div className="community-count">
               {c.itemsCount} items • {c.collectionsCount} collections
