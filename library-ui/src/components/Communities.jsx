@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { getCommunities, getCollections } from "../utils/dspace";
 
 export default function Communities() {
   const [communities, setCommunities] = useState([]);
@@ -8,21 +7,26 @@ export default function Communities() {
   useEffect(() => {
     async function loadCommunities() {
       try {
-        const comms = await getCommunities();
+        const res = await fetch("http://10.120.4.59:8080/server/api/core/communities");
+        const data = await res.json();
 
-        // fetch collections count for each community
+        const comms = data._embedded?.communities || [];
+
         const commsWithCounts = await Promise.all(
           comms.map(async (c) => {
             let collections = [];
             try {
-              collections = await getCollections(c.uuid);
+              const colRes = await fetch(c._links.collections.href);
+              const colData = await colRes.json();
+              collections = colData._embedded?.collections || [];
             } catch (err) {
               console.warn(`No collections for ${c.name}`, err);
             }
+
             return {
               id: c.uuid,
               name: c.name,
-              itemsCount: c.numberOfItems || 0,
+              itemsCount: c.archivedItemsCount >= 0 ? c.archivedItemsCount : 0,
               collectionsCount: collections.length,
             };
           })
@@ -58,9 +62,7 @@ export default function Communities() {
 
       <div className="card-content">
         {loading && <p>Loading...</p>}
-        {!loading && communities.length === 0 && (
-          <p>No communities found.</p>
-        )}
+        {!loading && communities.length === 0 && <p>No communities found.</p>}
 
         {communities.map((c) => (
           <div key={c.id} className="community-card">
