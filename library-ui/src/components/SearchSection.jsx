@@ -25,6 +25,7 @@ export default function SearchSection() {
         title: obj.title,
         author: obj.author,
         selfHref: obj.selfHref,
+        metadata: obj.metadata,
       }));
       setResults(formatted);
     } catch (err) {
@@ -38,30 +39,27 @@ export default function SearchSection() {
   return (
     <section className="search-section card">
       <div className="card-header">
-        <h2 className="card-title">
+        <h2 className="card-title flex items-center gap-2">
           <Search /> Explore Repository
         </h2>
-        <p className="card-subtitle">
+        <p className="card-subtitle text-gray-500">
           Search through thousands of academic resources
         </p>
       </div>
 
       <div className="card-content">
         {/* Search input */}
-        <div className="search-container">
-          <div className="search-icon">
-            <Search />
-          </div>
+        <div className="search-container flex gap-2 mb-4">
           <input
             type="text"
-            className="search-input"
+            className="search-input flex-1 p-2 border rounded-md"
             placeholder="Search publications, authors, keywords..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch(activeFilter)}
           />
           <button
-            className="search-btn"
+            className="search-btn px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
             onClick={() => handleSearch(activeFilter)}
           >
             Search
@@ -69,11 +67,15 @@ export default function SearchSection() {
         </div>
 
         {/* Filter tags */}
-        <div className="filter-tags">
+        <div className="filter-tags flex gap-2 mb-4">
           {filters.map((f) => (
             <span
               key={f}
-              className={`filter-tag ${activeFilter === f ? "active" : ""}`}
+              className={`filter-tag px-3 py-1 rounded-full border ${
+                activeFilter === f
+                  ? "bg-blue-600 text-white border-blue-600"
+                  : "bg-gray-100 text-gray-700 border-gray-300"
+              } cursor-pointer`}
               onClick={() => handleSearch(f)}
             >
               {f}
@@ -83,8 +85,7 @@ export default function SearchSection() {
 
         {/* Results */}
         <div
-          className="search-results"
-          style={{ maxHeight: "400px", overflowY: "auto" }}
+          className="search-results space-y-3 max-h-96 overflow-y-auto"
         >
           {loading && <p>Loading...</p>}
           {!loading && results.length === 0 && (
@@ -94,26 +95,14 @@ export default function SearchSection() {
           {results.map((r) => (
             <div
               key={r.id}
-              className="search-item p-4 mb-3 bg-white rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer border border-gray-200"
-              onClick={async () => {
-                try {
-                  // Fetch full item info to get bitstream
-                  const res = await fetch(r.selfHref);
-                  const itemData = await res.json();
-
-                  // Get first bitstream in first bundle
-                  const bitstreamUrl =
-                    itemData?.bundles?._embedded?.bundles?.[0]?._embedded
-                      ?.bitstreams?.[0]?._links?.self?.href;
-
-                  if (bitstreamUrl) {
-                    window.open(bitstreamUrl, "_blank");
-                  } else {
-                    alert("No file available for this publication.");
-                  }
-                } catch (err) {
-                  console.error("Error opening file:", err);
-                  alert("Unable to open file.");
+              className="search-item p-4 bg-white rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer border border-gray-200"
+              onClick={() => {
+                const uri =
+                  r.metadata?.["dc.identifier.uri"]?.[0]?.value || r.selfHref;
+                if (uri) {
+                  window.open(uri, "_blank");
+                } else {
+                  alert("No link available for this publication.");
                 }
               }}
             >
@@ -145,17 +134,16 @@ export async function searchPublications(query) {
 
     const data = await res.json();
     return (data._embedded?.searchResult?._embedded?.objects || []).map(
-      (obj) => ({
-        id: obj._embedded.indexableObject?.uuid,
-        title:
-          obj._embedded.indexableObject?.metadata?.["dc.title"]?.[0]?.value ||
-          "Untitled",
-        author:
-          obj._embedded.indexableObject?.metadata?.[
-            "dc.contributor.author"
-          ]?.[0]?.value || "Unknown",
-        selfHref: obj._embedded.indexableObject?._links?.self?.href,
-      })
+      (obj) => {
+        const md = obj._embedded.indexableObject?.metadata || {};
+        return {
+          id: obj._embedded.indexableObject?.uuid,
+          title: md["dc.title"]?.[0]?.value || "Untitled",
+          author: md["dc.contributor.author"]?.[0]?.value || "Unknown",
+          selfHref: obj._embedded.indexableObject?._links?.self?.href,
+          metadata: md,
+        };
+      }
     );
   } catch (err) {
     console.error("Error fetching search results:", err);
