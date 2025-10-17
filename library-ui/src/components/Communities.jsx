@@ -24,11 +24,17 @@ export default function Communities() {
               console.warn(`No collections for ${c.name}`, err);
             }
 
+            // Try to get the URI link from metadata, fallback to handle path
+            const uri =
+              c.metadata?.["dc.identifier.uri"]?.[0]?.value ||
+              `http://10.120.4.59:4000/handle/${c.uuid}`;
+
             return {
               id: c.uuid,
               name: c.name,
               itemsCount: c.archivedItemsCount >= 0 ? c.archivedItemsCount : 0,
               collectionsCount: collections.length,
+              uri,
             };
           })
         );
@@ -49,12 +55,13 @@ export default function Communities() {
       <div className="card-header">
         <div className="communities-header">
           <div>
-            <h2 className="card-title"> <Library/> Academic Communities</h2>
+            <h2 className="card-title flex items-center gap-2">
+              <Library /> Academic Communities
+            </h2>
             <p className="card-subtitle">
               Explore research by academic departments
             </p>
           </div>
-          
         </div>
       </div>
 
@@ -63,11 +70,25 @@ export default function Communities() {
         {!loading && communities.length === 0 && <p>No communities found.</p>}
 
         {communities.map((c) => (
-          <div key={c.id} className="community-card">
-            <div className="community-icon"><BookDashed/></div>
-            <div className="community-name">{c.name}</div>
-            <div className="community-count">
-              {c.itemsCount} items • {c.collectionsCount} collections
+          <div
+            key={c.id}
+            onClick={() => window.open(c.uri, "_blank")}
+            className="community-card p-4 mb-3 bg-white rounded-lg shadow border border-gray-200 hover:shadow-lg transition-shadow cursor-pointer"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="community-icon text-blue-500">
+                  <BookDashed className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    {c.name}
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    {c.itemsCount} items • {c.collectionsCount} collections
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         ))}
