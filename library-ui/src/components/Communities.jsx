@@ -27,7 +27,7 @@ export default function Communities() {
             // Try to get the URI link from metadata, fallback to handle path
             const uri =
              
-              `http://10.120.4.59:4000/handle/${c.uuid}`;
+              `http://10.120.4.59:4000/communities/${c.uuid}`;
 
             return {
               id: c.uuid,
