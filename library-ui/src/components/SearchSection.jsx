@@ -37,7 +37,7 @@ export default function SearchSection() {
   };
 
   return (
-    <section className="search-section card">
+    <section className="search-section card" id="browse">
       <div className="card-header">
         <h2 className="card-title flex items-center gap-2">
           <Search /> Explore Repository

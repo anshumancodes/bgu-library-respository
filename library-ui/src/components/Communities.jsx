@@ -51,7 +51,7 @@ export default function Communities() {
   }, []);
 
   return (
-    <section className="card">
+    <section className="card" id="communities">
       <div className="card-header">
         <div className="communities-header">
           <div>

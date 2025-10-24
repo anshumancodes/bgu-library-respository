@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getRecentSubmissions } from "../utils/dspace.js";
+
 
 export default function Submissions() {
   const [items, setItems] = useState([]);

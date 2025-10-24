@@ -1,44 +1,8 @@
-import { useState, useEffect } from "react";
-import { Menu, X, Bell, Search } from "lucide-react";
-import { login, logout, getCurrentUser } from "../utils/dspace";
-import Login from "./Login";
+import { useState } from "react";
+import { Menu, X, Search } from "lucide-react";
 
 export default function Header() {
-  const [user, setUser] = useState(null);
-  const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const currentUser = await getCurrentUser();
-        setUser(currentUser);
-      } catch (err) {
-        console.error("Failed to fetch user:", err);
-      }
-    };
-    fetchUser();
-  }, []);
-
-  const handleLogin = async (email, password) => {
-    try {
-      await login(email, password);
-      const currentUser = await getCurrentUser();
-      setUser(currentUser);
-      setShowLoginPopup(false);
-    } catch (err) {
-      alert("Login failed! Please check your credentials.");
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      setUser(null);
-    } catch (err) {
-      console.error("Logout failed:", err);
-    }
-  };
 
   return (
     <>
@@ -46,7 +10,7 @@ export default function Header() {
         <nav className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3 md:py-4">
           {/* Logo */}
           <div className="flex items-center gap-3 hover:scale-105 transition-transform">
-            <div className="relative md:w-full  h-10 md:h-24 rounded overflow-hidden shadow-md">
+            <div className="relative md:w-full h-10 md:h-24 rounded overflow-hidden shadow-md">
               <img
                 src="BGU-Logo.jpg"
                 alt="Birla Global University"
@@ -58,19 +22,19 @@ export default function Header() {
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
             <a
-              href="#"
+              href="#communities"
               className="text-gray-700 font-medium relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-blue-600 hover:after:w-full after:transition-all hover:text-blue-600"
             >
               Communities & Collections
             </a>
             <a
-              href="#"
+              href="#browse"
               className="text-gray-700 font-medium relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-blue-600 hover:after:w-full after:transition-all hover:text-blue-600"
             >
               Browse Repository
             </a>
             <a
-              href="#"
+              href=""
               className="text-gray-700 font-medium relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-blue-600 hover:after:w-full after:transition-all hover:text-blue-600"
             >
               Statistics
@@ -82,28 +46,13 @@ export default function Header() {
             <button className="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-200 bg-gray-50 hover:bg-blue-600 hover:text-white transition-all shadow-sm">
               <Search size={18} />
             </button>
-          
 
-            {user ? (
-              <div className="flex items-center gap-3">
-                <span className="hidden sm:inline-block text-gray-700">
-                  👋 {user.name || "User"}
-                </span>
-                <button
-                  onClick={handleLogout}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:-translate-y-0.5 hover:shadow-md transition-all"
-                >
-                  Log Out
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => setShowLoginPopup(true)}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:-translate-y-0.5 hover:shadow-md transition-all"
-              >
-                Log In
-              </button>
-            )}
+            <a
+              href="http://10.120.4.59:4000/login"
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:-translate-y-0.5 hover:shadow-md transition-all"
+            >
+              Log In
+            </a>
 
             {/* Hamburger */}
             <button
@@ -118,41 +67,24 @@ export default function Header() {
         {/* Mobile Menu */}
         {menuOpen && (
           <div className="md:hidden bg-white/80 backdrop-blur-md border-t border-gray-200 px-6 py-4 space-y-4 flex flex-col">
-            <a href="#" className="text-gray-700 font-medium hover:text-blue-600">
+            <a href="#communities" className="text-gray-700 font-medium hover:text-blue-600">
               Communities & Collections
             </a>
-            <a href="#" className="text-gray-700 font-medium hover:text-blue-600">
+            <a href="#browse" className="text-gray-700 font-medium hover:text-blue-600">
               Browse Repository
             </a>
             <a href="#" className="text-gray-700 font-medium hover:text-blue-600">
               Statistics
             </a>
-            {user ? (
-              <button
-                onClick={handleLogout}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:-translate-y-0.5 hover:shadow-md transition-all w-full"
-              >
-                Log Out
-              </button>
-            ) : (
-              <button
-                onClick={() => setShowLoginPopup(true)}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:-translate-y-0.5 hover:shadow-md transition-all w-full"
-              >
-                Log In
-              </button>
-            )}
+            <a
+              href="http://10.120.4.59:4000/login"
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:-translate-y-0.5 hover:shadow-md transition-all w-full text-center"
+            >
+              Log In
+            </a>
           </div>
         )}
       </header>
-
-      {showLoginPopup && (
-        <Login
-          isOpen={showLoginPopup}
-          onClose={() => setShowLoginPopup(false)}
-          onLogin={handleLogin}
-        />
-      )}
     </>
   );
 }
