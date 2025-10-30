@@ -3,7 +3,7 @@ import {
   getTotalItems,
   getTotalAuthors,
   getTotalCollections,
-  getTotalDownloads,
+  getTotalsubjects,
 } from "../utils/stats.js";
 
 
@@ -18,18 +18,18 @@ export default function Hero() {
  useEffect(() => {
   async function loadStats() {
     try {
-      const [items, authors, collections, downloads] = await Promise.all([
+      const [items, authors, collections, subjects] = await Promise.all([
         getTotalItems(),
         getTotalAuthors(),
         getTotalCollections(),
-        getTotalDownloads(),
+        getTotalsubjects(),
       ]);
 
       setStats({
         communities: items,
         authors,
         collections,
-        subjects: downloads,
+        subjects
       });
     } catch (err) {
       console.error("Error loading stats:", err);
