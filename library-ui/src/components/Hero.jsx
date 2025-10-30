@@ -53,7 +53,7 @@ export default function Hero() {
         </h1>
 
         <p className=" text-gray-600 mb-10">
-          Advancing Knowledge Through Digital Scholarship — An Initiative by
+          Advancing Knowledge Through Digital Scholarship - An Initiative by
           Central Library, Birla Global University
         </p>
 
@@ -63,28 +63,28 @@ export default function Hero() {
             <span className="stat-number text-3xl font-bold text-blue-700 block">
               {stats.communities.toLocaleString()}
             </span>
-            <span className="stat-label text-gray-600">Communities</span>
+            <span className="stat-label">Communities</span>
           </div>
 
           <div className="stat-item">
             <span className="stat-number text-3xl font-bold text-blue-700 block">
               {stats.authors.toLocaleString()}
             </span>
-            <span className="stat-label text-gray-600">Researchers</span>
+            <span className="stat-label ">Researchers</span>
           </div>
 
           <div className="stat-item">
             <span className="stat-number text-3xl font-bold text-blue-700 block">
               {stats.collections.toLocaleString()}
             </span>
-            <span className="stat-label text-gray-600">Collections</span>
+            <span className="stat-label ">Collections</span>
           </div>
 
           <div className="stat-item">
             <span className="stat-number text-3xl font-bold text-blue-700 block">
               {stats.subjects.toLocaleString()}
             </span>
-            <span className="stat-label text-gray-600">Subjects</span>
+            <span className="stat-label ">Subjects</span>
           </div>
         </div>
       </div>
