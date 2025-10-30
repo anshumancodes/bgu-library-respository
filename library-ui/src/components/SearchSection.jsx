@@ -84,13 +84,9 @@ export default function SearchSection() {
         </div>
 
         {/* Results */}
-        <div
-          className="search-results space-y-3 max-h-96 overflow-y-auto"
-        >
+        <div className="search-results space-y-3 max-h-96 overflow-y-auto">
           {loading && <p>Loading...</p>}
-          {!loading && results.length === 0 && (
-            <p>No results. Try another keyword.</p>
-          )}
+          {!loading && results.length === 0 && <p>No results. Try another keyword.</p>}
 
           {results.map((r) => (
             <div
@@ -99,16 +95,11 @@ export default function SearchSection() {
               onClick={() => {
                 const uri =
                   r.metadata?.["dc.identifier.uri"]?.[0]?.value || r.selfHref;
-                if (uri) {
-                  window.open(uri, "_blank");
-                } else {
-                  alert("No link available for this publication.");
-                }
+                if (uri) window.open(uri, "_blank");
+                else alert("No link available for this publication.");
               }}
             >
-              <h4 className="text-lg font-semibold text-gray-800 mb-1">
-                {r.title}
-              </h4>
+              <h4 className="text-lg font-semibold text-gray-800 mb-1">{r.title}</h4>
               <p className="text-sm text-gray-500 flex items-center gap-1">
                 <User className="w-4 h-4 text-gray-400" /> {r.author}
               </p>
@@ -121,30 +112,43 @@ export default function SearchSection() {
 }
 
 // Utility function to search publications
-export async function searchPublications(query) {
-  if (!query || !query.trim()) return [];
+export async function searchPublications(query, filter) {
+  if (!query && filter === "All") return [];
 
-  const url = `http://10.120.4.59:8080/server/api/discover/search/objects?query=${encodeURIComponent(
-    query.trim()
-  )}`;
+  const BASE_URL = "http://10.120.4.59:8080";
+  const params = new URLSearchParams();
+
+  if (filter === "All") {
+    // Normal full-text query
+    params.append("query", query.trim() || "*");
+  } else {
+    // Map filter to DSpace entityType
+    let entityType = "";
+    if (filter === "Research Papers") entityType = "Publication";
+    if (filter === "Theses") entityType = "Thesis";
+    if (filter === "Datasets") entityType = "Dataset";
+
+    if (query.trim()) params.append("query", query.trim());
+    if (entityType) params.append("f.entityType", `${entityType},equals`);
+  }
+
+  const url = `${BASE_URL}/server/api/discover/search/objects?${params.toString()}`;
 
   try {
     const res = await fetch(url);
     if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
 
     const data = await res.json();
-    return (data._embedded?.searchResult?._embedded?.objects || []).map(
-      (obj) => {
-        const md = obj._embedded.indexableObject?.metadata || {};
-        return {
-          id: obj._embedded.indexableObject?.uuid,
-          title: md["dc.title"]?.[0]?.value || "Untitled",
-          author: md["dc.contributor.author"]?.[0]?.value || "Unknown",
-          selfHref: obj._embedded.indexableObject?._links?.self?.href,
-          metadata: md,
-        };
-      }
-    );
+    return (data._embedded?.searchResult?._embedded?.objects || []).map((obj) => {
+      const md = obj._embedded.indexableObject?.metadata || {};
+      return {
+        id: obj._embedded.indexableObject?.uuid,
+        title: md["dc.title"]?.[0]?.value || "Untitled",
+        author: md["dc.contributor.author"]?.[0]?.value || "Unknown",
+        selfHref: obj._embedded.indexableObject?._links?.self?.href,
+        metadata: md,
+      };
+    });
   } catch (err) {
     console.error("Error fetching search results:", err);
     return [];
