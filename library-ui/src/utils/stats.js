@@ -49,7 +49,7 @@ export async function getAllSubjects(maxPages = 20) {
 /**
  * Optionally get the total count
  */
-export async function getTotalSubjects(maxPages = 20) {
+export async function getTotalsubjects(maxPages = 20) {
   const subjects = await getAllSubjects(maxPages);
   return subjects.length;
 }
