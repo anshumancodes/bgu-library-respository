@@ -17,7 +17,7 @@ export async function getTotalItems() {
 export async function getTotalAuthors() {
   const data = await fetchJSON(`${BASE_URL}/discover/facets/author`);
   
-  return data?.values?.length || 0;
+  return data?._embedded?.values?.length ?? 0;
 }
 
 
@@ -27,7 +27,7 @@ export async function getTotalCollections() {
 }
 
 
-export async function getTotalDownloads() {
+export async function getTotalsubjects() {
   const data = await fetchJSON(`${BASE_URL}/discover/facets/subject`);
-  return data?.values?.length || 0;
+  return data?._embedded?.values?.length ?? 0;
 }
