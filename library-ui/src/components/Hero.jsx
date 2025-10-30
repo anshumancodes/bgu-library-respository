@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import {
-  getTotalCommunities,
-  getTotalCollections,
+  getTotalItems,
   getTotalAuthors,
-  getTotalSubjects,
-} from "../utils/stats";
+  getTotalCollections,
+  getTotalDownloads,
+} from "../utils/stats.js";
+
 
 export default function Hero() {
   const [stats, setStats] = useState({
@@ -14,23 +15,29 @@ export default function Hero() {
     subjects: 0,
   });
 
-  useEffect(() => {
-    async function loadStats() {
-      try {
-        const [communities, authors, collections, subjects] = await Promise.all([
-          getTotalCommunities(),
-          getTotalAuthors(),
-          getTotalCollections(),
-          getTotalSubjects(),
-        ]);
+ useEffect(() => {
+  async function loadStats() {
+    try {
+      const [items, authors, collections, downloads] = await Promise.all([
+        getTotalItems(),
+        getTotalAuthors(),
+        getTotalCollections(),
+        getTotalDownloads(),
+      ]);
 
-        setStats({ communities, authors, collections, subjects });
-      } catch (err) {
-        console.error("Error loading stats:", err);
-      }
+      setStats({
+        communities: items,
+        authors,
+        collections,
+        subjects: downloads,
+      });
+    } catch (err) {
+      console.error("Error loading stats:", err);
     }
-    loadStats();
-  }, []);
+  }
+  loadStats();
+}, []);
+
 
   return (
     <section className="hero">
