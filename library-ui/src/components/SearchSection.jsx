@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { User, Search } from "lucide-react";
+import { User, Search, Filter } from "lucide-react";
 
 export default function SearchSection() {
   const [query, setQuery] = useState("");
@@ -7,19 +7,42 @@ export default function SearchSection() {
   const [loading, setLoading] = useState(false);
   const [activeFilter, setActiveFilter] = useState("All");
 
-  const filters = ["All", "Research Papers", "Theses", "Datasets"];
+  const [subject, setSubject] = useState("");
+  const [entityType, setEntityType] = useState("");
+  const [yearFrom, setYearFrom] = useState("");
+  const [yearTo, setYearTo] = useState("");
 
-  const handleSearch = async (filter = "All") => {
-    if (!query.trim() && filter === "All") {
+  const filters = [
+    { label: "All", apiField: null },
+    { label: "Title", apiField: "title" },
+    { label: "Author", apiField: "author" },
+    { label: "Subject", apiField: "subject" },
+    { label: "Year", apiField: "dateIssued" },
+    { label: "Entity Type", apiField: "entityType" },
+  ];
+
+  const handleSearch = async (filterLabel = "All") => {
+    if (!query.trim() && filterLabel === "All") {
       setResults([]);
       return;
     }
 
     setLoading(true);
-    setActiveFilter(filter);
+    setActiveFilter(filterLabel);
 
     try {
-      const data = await searchPublications(query, filter);
+      const selected = filters.find((f) => f.label === filterLabel);
+      const apiField = selected?.apiField;
+
+      const data = await searchPublications({
+        query,
+        filterField: apiField,
+        subject,
+        entityType,
+        yearFrom,
+        yearTo,
+      });
+
       const formatted = data.map((obj) => ({
         id: obj.id,
         title: obj.title,
@@ -27,6 +50,7 @@ export default function SearchSection() {
         selfHref: obj.selfHref,
         metadata: obj.metadata,
       }));
+
       setResults(formatted);
     } catch (err) {
       console.error("Search error:", err);
@@ -48,18 +72,18 @@ export default function SearchSection() {
       </div>
 
       <div className="card-content">
-        {/* Search input */}
+        {/* Search Input */}
         <div className="search-container flex gap-2 mb-4">
           <input
             type="text"
-            className="search-input flex-1 p-2 border rounded-md"
+            className="flex-1 p-2 border rounded-md"
             placeholder="Search publications, authors, keywords..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch(activeFilter)}
           />
           <button
-            className="search-btn px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
             onClick={() => handleSearch(activeFilter)}
           >
             Search
@@ -67,43 +91,98 @@ export default function SearchSection() {
         </div>
 
         {/* Filter tags */}
-        <div className="filter-tags flex gap-2 mb-4">
+        <div className="filter-tags flex flex-wrap gap-2 mb-4">
           {filters.map((f) => (
             <span
-              key={f}
-              className={`filter-tag px-3 py-1 rounded-full border ${
-                activeFilter === f
+              key={f.label}
+              className={`px-3 py-1 rounded-full border cursor-pointer ${
+                activeFilter === f.label
                   ? "bg-blue-600 text-white border-blue-600"
                   : "bg-gray-100 text-gray-700 border-gray-300"
-              } cursor-pointer`}
-              onClick={() => handleSearch(f)}
+              }`}
+              onClick={() => handleSearch(f.label)}
             >
-              {f}
+              {f.label}
             </span>
           ))}
         </div>
 
+        {/* Advanced Filters */}
+        <div className="advanced-filters bg-gray-50 p-3 rounded-md border mb-4 space-y-3">
+          <div className="flex items-center gap-3">
+            <Filter className="w-4 h-4 text-gray-600" />
+            <span className="font-medium text-gray-700">Advanced Filters</span>
+          </div>
+
+          <div className="grid md:grid-cols-3 sm:grid-cols-1 gap-3">
+            {/* Subject */}
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">Subject</label>
+              <input
+                type="text"
+                className="w-full p-2 border rounded-md"
+                placeholder="e.g., Machine Learning"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+              />
+            </div>
+
+            {/* Entity Type */}
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">
+                Entity Type
+              </label>
+              <select
+                className="w-full p-2 border rounded-md"
+                value={entityType}
+                onChange={(e) => setEntityType(e.target.value)}
+              >
+                <option value="">All</option>
+                <option value="Publication">Publication</option>
+                <option value="Dataset">Dataset</option>
+                <option value="Thesis">Thesis</option>
+              </select>
+            </div>
+
+            {/* Date Range */}
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">
+                Year Range
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  placeholder="From"
+                  className="w-1/2 p-2 border rounded-md"
+                  value={yearFrom}
+                  onChange={(e) => setYearFrom(e.target.value)}
+                />
+                <input
+                  type="number"
+                  placeholder="To"
+                  className="w-1/2 p-2 border rounded-md"
+                  value={yearTo}
+                  onChange={(e) => setYearTo(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Results */}
-        <div
-          className="search-results space-y-3 max-h-96 overflow-y-auto"
-        >
+        <div className="search-results space-y-3 max-h-96 overflow-y-auto">
           {loading && <p>Loading...</p>}
-          {!loading && results.length === 0 && (
-            <p>No results. Try another keyword.</p>
-          )}
+          {!loading && results.length === 0 && <p>No results found.</p>}
 
           {results.map((r) => (
             <div
               key={r.id}
-              className="search-item p-4 bg-white rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer border border-gray-200"
+              className="p-4 bg-white rounded-lg shadow hover:shadow-lg transition-shadow border border-gray-200 cursor-pointer"
               onClick={() => {
                 const uri =
                   r.metadata?.["dc.identifier.uri"]?.[0]?.value || r.selfHref;
-                if (uri) {
-                  window.open(uri, "_blank");
-                } else {
-                  alert("No link available for this publication.");
-                }
+                if (uri) window.open(uri, "_blank");
+                else alert("No link available for this publication.");
               }}
             >
               <h4 className="text-lg font-semibold text-gray-800 mb-1">
@@ -120,19 +199,36 @@ export default function SearchSection() {
   );
 }
 
-// Utility function to search publications
-export async function searchPublications(query) {
-  if (!query || !query.trim()) return [];
+// Utility function
+export async function searchPublications({
+  query,
+  filterField,
+  subject,
+  entityType,
+  yearFrom,
+  yearTo,
+}) {
+  const base = "http://10.120.4.59:8080/server/api/discover/search/objects";
+  const params = new URLSearchParams();
 
-  const url = `http://10.120.4.59:8080/server/api/discover/search/objects?query=${encodeURIComponent(
-    query.trim()
-  )}`;
+  if (filterField && filterField !== "All") {
+    params.append(`f.${filterField}`, `${query},contains`);
+  } else if (query) {
+    params.append("query", query);
+  }
+
+  if (subject) params.append("f.subject", `${subject},contains`);
+  if (entityType) params.append("f.entityType", `${entityType},equals`);
+  if (yearFrom) params.append("f.dateIssued.min", yearFrom);
+  if (yearTo) params.append("f.dateIssued.max", yearTo);
+
+  const url = `${base}?${params.toString()}`;
 
   try {
     const res = await fetch(url);
-    if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
+
     return (data._embedded?.searchResult?._embedded?.objects || []).map(
       (obj) => {
         const md = obj._embedded.indexableObject?.metadata || {};
