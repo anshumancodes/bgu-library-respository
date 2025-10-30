@@ -112,43 +112,45 @@ export default function SearchSection() {
 }
 
 // Utility function to search publications
-export async function searchPublications(query, filter) {
-  if (!query && filter === "All") return [];
+// Utility function to search publications
+export async function searchPublications(query, filter = "All") {
+  if (!query || !query.trim()) return [];
 
-  const BASE_URL = "http://10.120.4.59:8080";
-  const params = new URLSearchParams();
+  // Base URL
+  let url = `http://10.120.4.59:8080/server/api/discover/search/objects?query=${encodeURIComponent(
+    query.trim()
+  )}`;
 
-  if (filter === "All") {
-    // Normal full-text query
-    params.append("query", query.trim() || "*");
-  } else {
-    // Map filter to DSpace entityType
-    let entityType = "";
-    if (filter === "Research Papers") entityType = "Publication";
-    if (filter === "Theses") entityType = "Thesis";
-    if (filter === "Datasets") entityType = "Dataset";
-
-    if (query.trim()) params.append("query", query.trim());
-    if (entityType) params.append("f.entityType", `${entityType},equals`);
+  // Apply filter only for advanced search
+  if (filter !== "All") {
+    const filterMap = {
+      "Research Papers": "Publication",
+      Theses: "Thesis",
+      Datasets: "Dataset",
+    };
+    const type = filterMap[filter];
+    if (type) {
+      url += `&f.entityType=${encodeURIComponent(type)},equals`;
+    }
   }
-
-  const url = `${BASE_URL}/server/api/discover/search/objects?${params.toString()}`;
 
   try {
     const res = await fetch(url);
     if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
 
     const data = await res.json();
-    return (data._embedded?.searchResult?._embedded?.objects || []).map((obj) => {
-      const md = obj._embedded.indexableObject?.metadata || {};
-      return {
-        id: obj._embedded.indexableObject?.uuid,
-        title: md["dc.title"]?.[0]?.value || "Untitled",
-        author: md["dc.contributor.author"]?.[0]?.value || "Unknown",
-        selfHref: obj._embedded.indexableObject?._links?.self?.href,
-        metadata: md,
-      };
-    });
+    return (data._embedded?.searchResult?._embedded?.objects || []).map(
+      (obj) => {
+        const md = obj._embedded.indexableObject?.metadata || {};
+        return {
+          id: obj._embedded.indexableObject?.uuid,
+          title: md["dc.title"]?.[0]?.value || "Untitled",
+          author: md["dc.contributor.author"]?.[0]?.value || "Unknown",
+          selfHref: obj._embedded.indexableObject?._links?.self?.href,
+          metadata: md,
+        };
+      }
+    );
   } catch (err) {
     console.error("Error fetching search results:", err);
     return [];
