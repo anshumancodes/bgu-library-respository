@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import {
-  getTotalCommunities,
+  
   getTotalCollections,
   getTotalAuthors,
   getTotalSubjects,
