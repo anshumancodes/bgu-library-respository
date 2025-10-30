@@ -43,16 +43,16 @@ export default function Hero() {
     <section className="hero">
       <div className="hero-content text-center max-w-4xl mx-auto py-16">
         <div className="hero-badge mb-4">
-          <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
+          
             Institutional Repository
-          </span>
+          
         </div>
 
         <h1 className="text-4xl font-bold mb-3">
           Repository of Birla Global University
         </h1>
 
-        <p className="hero-subtitle text-gray-600 mb-10">
+        <p className=" text-gray-600 mb-10">
           Advancing Knowledge Through Digital Scholarship — An Initiative by
           Central Library, Birla Global University
         </p>
