@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import {
-  
+  getTotalCommunities,
   getTotalCollections,
   getTotalAuthors,
   getTotalSubjects,
-} from "../utils/stats.js";
+} from "../utils/stats";
 
 export default function Hero() {
   const [stats, setStats] = useState({
