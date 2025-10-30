@@ -27,7 +27,30 @@ export async function getTotalCollections() {
 }
 
 
-export async function getTotalsubjects() {
-  const data = await fetchJSON(`${BASE_URL}/discover/facets/subject`);
-  return data?._embedded?.values?.length ?? 0;
+export async function getAllSubjects(maxPages = 20) {
+  let allSubjects = [];
+
+  for (let page = 0; page <= maxPages; page++) {
+    try {
+      const data = await fetchJSON(`${BASE_URL}/discover/facets/subject?page=${page}`);
+      const values = data?._embedded?.values || [];
+
+      if (values.length === 0) break; // stop if no more data
+      allSubjects = [...allSubjects, ...values];
+    } catch (err) {
+      console.error(`Error fetching page ${page}:`, err);
+      break;
+    }
+  }
+
+  return allSubjects;
 }
+
+/**
+ * Optionally get the total count
+ */
+export async function getTotalSubjects(maxPages = 20) {
+  const subjects = await getAllSubjects(maxPages);
+  return subjects.length;
+}
+
