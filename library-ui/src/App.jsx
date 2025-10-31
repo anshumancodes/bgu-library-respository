@@ -4,40 +4,27 @@ import SearchSection from "./components/SearchSection";
 import Communities from "./components/Communities";
 import Submissions from "./components/Submissions";
 import Footer from "./components/Footer";
-// import Sidebar from "./components/Sidebar"; // Uncomment if used
 
 export default function App() {
   return (
-    <>
-      <div className="page-transition">
-        <Header />
+    <div className="page-transition flex flex-col min-h-screen">
+      <Header />
 
-        <main className="flex flex-col items-center justify-center w-full  space-y-10">
-          {/* Hero Section */}
-          <div className="w-[100%]">
-            <Hero />
-          </div>
+      <main className="flex flex-col items-center justify-center w-full space-y-10 px-4 sm:px-6 lg:px-8">
+        <div className="w-full">
+          <Hero />
+        </div>
 
-         <div className="w-[80%] mt-10">
-           {/* Search Section */}
-          <div >
-            <SearchSection />
-          </div>
+        <div className="w-full sm:w-[90%] md:w-[85%] lg:w-[80%] mt-10 space-y-10">
+          <SearchSection />
 
-          {/* Communities Section */}
-          <div >
-            <Communities />
-          </div>
+          <Communities />
 
-          {/* Submissions Section */}
-          <div >
-            <Submissions />
-          </div>
-         </div>
-        </main>
+          <Submissions />
+        </div>
+      </main>
 
-        <Footer />
-      </div>
-    </>
+      <Footer />
+    </div>
   );
 }
