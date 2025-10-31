@@ -28,7 +28,7 @@ export default function Submissions() {
           };
         });
 
-        // ✅ Sort by most recent date (descending)
+        
         const sorted = formatted.sort((a, b) => {
           if (a.date === "N/A") return 1;
           if (b.date === "N/A") return -1;
@@ -57,7 +57,7 @@ export default function Submissions() {
       </div>
 
       <div
-        className="card-content overflow-y-auto"
+        className="card-content overflow-y-auto bg-blue-50"
         style={{
           maxHeight: "300px",
           scrollbarWidth: "thin",

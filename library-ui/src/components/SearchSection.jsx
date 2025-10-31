@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { User, Search } from "lucide-react";
+import { User, Search   } from "lucide-react";
 
 export default function SearchSection() {
   const [query, setQuery] = useState("");
@@ -37,7 +37,7 @@ export default function SearchSection() {
   };
 
   return (
-    <section className="search-section card" id="browse">
+    <section className="border-1 card  " id="browse">
       <div className="card-header">
         <h2 className="card-title flex items-center gap-2">
           <Search /> Explore Repository
@@ -47,24 +47,30 @@ export default function SearchSection() {
         </p>
       </div>
 
-      <div className="card-content">
+      <div className="card-content bg-blue-50">
         {/* Search input */}
-        <div className="search-container flex gap-2 mb-4">
+
+        <div className="search-container flex items-center gap-2 mb-4 w-full max-w-full sm:max-w-lg md:max-w-full  ">
           <input
             type="text"
-            className="search-input flex-1 p-2 border rounded-md"
+            className="search-input flex-1 p-1.5 sm:p-2 border rounded-md text-sm sm:text-base"
             placeholder="Search publications, authors, keywords..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch(activeFilter)}
           />
+
           <button
-            className="search-btn px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="search-btn hidden md:block"
             onClick={() => handleSearch(activeFilter)}
           >
-            Search
+            {/* Show icon on mobile, text on larger screens */}
+            <Search className=" bg-transparent sm:hidden" />
+            <span className="hidden sm:inline">Search</span>
           </button>
+          
         </div>
+        
 
         {/* Filter tags */}
         <div className="filter-tags flex gap-2 mb-4">
@@ -86,7 +92,9 @@ export default function SearchSection() {
         {/* Results */}
         <div className="search-results space-y-3 max-h-96 overflow-y-auto">
           {loading && <p>Loading...</p>}
-          {!loading && results.length === 0 && <p>No results. Try another keyword.</p>}
+          {!loading && results.length === 0 && (
+            <p>No results. Try another keyword.</p>
+          )}
 
           {results.map((r) => (
             <div
@@ -99,7 +107,9 @@ export default function SearchSection() {
                 else alert("No link available for this publication.");
               }}
             >
-              <h4 className="text-lg font-semibold text-gray-800 mb-1">{r.title}</h4>
+              <h4 className="text-lg font-semibold text-gray-800 mb-1">
+                {r.title}
+              </h4>
               <p className="text-sm text-gray-500 flex items-center gap-1">
                 <User className="w-4 h-4 text-gray-400" /> {r.author}
               </p>
