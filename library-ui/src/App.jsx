@@ -7,10 +7,10 @@ import Footer from "./components/Footer";
 
 export default function App() {
   return (
-    <div className="page-transition flex flex-col min-h-screen">
+    <div className="bg-yellow-50 flex flex-col min-h-screen">
       <Header />
 
-      <main className="flex flex-col items-center justify-center w-full space-y-10 px-4 sm:px-6 lg:px-8">
+      <main className="flex flex-col items-center justify-center w-full space-y-10 ">
         <div className="w-full">
           <Hero />
         </div>
