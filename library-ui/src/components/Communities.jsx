@@ -85,7 +85,7 @@ export default function Communities() {
                     {c.name}
                   </h3>
                   <p className="text-sm text-gray-500">
-                    {c.itemsCount} items • {c.collectionsCount} collections
+                     {c.collectionsCount} collections
                   </p>
                 </div>
               </div>
