@@ -9,11 +9,12 @@ export default function Submissions() {
     async function load() {
       try {
         const res = await fetch(
-          "http://10.120.4.59:8080/server/api/discover/browses/dateissued/items?size=5"
+          "http://10.120.4.59:8080/server/api/discover/browses/dateissued/items?size=10"
         );
         const data = await res.json();
         const results = data?._embedded?.items || [];
 
+        // Format data
         const formatted = results.map((obj) => {
           const md = obj.metadata || {};
           const date = md["dc.date.accessioned"]?.[0]?.value || "N/A";
@@ -27,7 +28,14 @@ export default function Submissions() {
           };
         });
 
-        setItems(formatted);
+        // ✅ Sort by most recent date (descending)
+        const sorted = formatted.sort((a, b) => {
+          if (a.date === "N/A") return 1;
+          if (b.date === "N/A") return -1;
+          return new Date(b.date) - new Date(a.date);
+        });
+
+        setItems(sorted);
       } catch (err) {
         console.error("Error fetching submissions:", err);
       } finally {
@@ -78,3 +86,4 @@ export default function Submissions() {
     </section>
   );
 }
+
