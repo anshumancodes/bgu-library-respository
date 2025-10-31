@@ -62,7 +62,7 @@ export default function Communities() {
         </p>
       </div>
 
-      <div className="card-content max-h-[700px] bg-gray-100">
+      <div className="card-content max-h-[700px] bg-gray-200">
         {loading ? (
           <p className="text-center py-4 text-gray-500">Loading communities...</p>
         ) : communities.length === 0 ? (
