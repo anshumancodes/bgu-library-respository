@@ -16,11 +16,13 @@ export default function Submissions() {
 
         const formatted = results.map((obj) => {
           const md = obj.metadata || {};
+          const date = md["dc.date.accessioned"]?.[0]?.value || "N/A";
           return {
             id: obj.uuid,
             title: md["dc.title"]?.[0]?.value || "Untitled",
             author: md["dc.contributor.author"]?.[0]?.value || "Unknown",
-            year: md["dc.date.issued"]?.[0]?.value || "N/A",
+            year: date !== "N/A" ? date.slice(0, 4) : "N/A",
+            date,
             link: md["dc.identifier.uri"]?.[0]?.value || "#",
           };
         });
@@ -38,10 +40,11 @@ export default function Submissions() {
 
   return (
     <section className="card mt-10">
-      <div className="card-header">
-        <h2 className="card-title"><Calendar/> Recent Submissions</h2>
-        <p className="card-subtitle">Latest research contributions</p>
+      <div className="card-header flex items-center gap-2">
+        <Calendar />
+        <h2 className="card-title">Recent Submissions</h2>
       </div>
+      <p className="card-subtitle">Latest research contributions</p>
 
       <div
         className="card-content overflow-y-auto"
@@ -55,24 +58,21 @@ export default function Submissions() {
         {!loading && items.length === 0 && <p>No submissions found.</p>}
 
         {items.map((item) => (
-          <div
+          <a
             key={item.id}
-            className="submission-item flex gap-3 py-2 border-b border-gray-200"
+            href={item.link}
+            className="block submission-item flex flex-col py-2 border-b border-gray-200 hover:bg-gray-50 transition"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            <div className="submission-info">
-              <a
-                href={item.link}
-                className="submission-title font-semibold text-blue-600 hover:underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {item.title}
-              </a>
-              <div className="submission-meta text-sm text-gray-600">
-                <User/> {item.author} • <Calendar/> {item.year}
-              </div>
-            </div>
-          </div>
+            <span className="submission-title font-semibold text-blue-600 hover:underline">
+              {item.title}
+            </span>
+            <span className="submission-meta text-sm text-gray-600 flex items-center gap-2">
+              <User className="w-4 h-4" /> {item.author} •{" "}
+              <Calendar className="w-4 h-4" /> {item.year}
+            </span>
+          </a>
         ))}
       </div>
     </section>
