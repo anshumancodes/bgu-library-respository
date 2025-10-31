@@ -15,10 +15,22 @@ export async function getTotalItems() {
 
 
 export async function getTotalAuthors() {
-  const data = await fetchJSON(`${BASE_URL}/discover/browses/author/entries`);
-  
-  return data?._embedded?.values?.length ?? 0;
+  try {
+    const res = await fetch("http://10.120.4.59:8080/server/api/discover/browses/author/entries");
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+   
+    const total = data?._embedded?.entries?.length ?? 0;
+    return total;
+  } catch (err) {
+    console.error("Error fetching total authors:", err);
+    return 0;
+  }
 }
+
 
 
 export async function getTotalCollections() {
