@@ -1,4 +1,4 @@
-import { Calendar, User } from "lucide-react";
+import { Calendar, User, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function Submissions() {
@@ -9,26 +9,36 @@ export default function Submissions() {
     async function load() {
       try {
         const res = await fetch(
-          "http://10.120.4.59:8080/server/api/discover/browses/dateissued/items?size=10"
+          "http://10.120.4.59:8080/server/api/discover/search/objects?sort=dc.date.accessioned,DESC&page=0&size=5"
         );
         const data = await res.json();
-        const results = data?._embedded?.items || [];
 
-        // Format data
+
+        const results =
+          data?._embedded?.searchResult?._embedded?.objects || [];
+
         const formatted = results.map((obj) => {
-          const md = obj.metadata || {};
-          const date = md["dc.date.accessioned"]?.[0]?.value || "N/A";
+          const item = obj._embedded?.indexableObject;
+          const md = item?.metadata || {};
+
+          const title = md["dc.title"]?.[0]?.value || "Untitled";
+          const author = md["dc.contributor.author"]?.[0]?.value || "Unknown";
+          const dateAcc = md["dc.date.accessioned"]?.[0]?.value || null;
+          const year = dateAcc ? dateAcc.slice(0, 4) : "N/A";
+          const link =
+            md["dc.identifier.uri"]?.[0]?.value ||
+            `http://10.120.4.59:4000/handle/${item?.handle}`;
+
           return {
-            id: obj.uuid,
-            title: md["dc.title"]?.[0]?.value || "Untitled",
-            author: md["dc.contributor.author"]?.[0]?.value || "Unknown",
-            year: date !== "N/A" ? date.slice(0, 4) : "N/A",
-            date,
-            link: md["dc.identifier.uri"]?.[0]?.value || "#",
+            id: item?.uuid,
+            title,
+            author,
+            year,
+            date: dateAcc || "N/A",
+            link,
           };
         });
 
-        
         const sorted = formatted.sort((a, b) => {
           if (a.date === "N/A") return 1;
           if (b.date === "N/A") return -1;
@@ -56,14 +66,7 @@ export default function Submissions() {
         <p className="card-subtitle">Latest research contributions</p>
       </div>
 
-      <div
-        className="card-content overflow-y-auto bg-blue-50"
-        style={{
-          maxHeight: "300px",
-          scrollbarWidth: "thin",
-          scrollbarColor: "#999 #f0f0f0",
-        }}
-      >
+      <div className="card-content bg-blue-50 py-4 px-2">
         {loading && <p>Loading...</p>}
         {!loading && items.length === 0 && <p>No submissions found.</p>}
 
@@ -71,7 +74,7 @@ export default function Submissions() {
           <a
             key={item.id}
             href={item.link}
-            className=" submission-item flex flex-col py-2 border-b border-gray-200 hover:bg-gray-50 transition"
+            className="submission-item flex flex-col py-2 border-b border-gray-200 hover:bg-gray-50 transition"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -84,6 +87,21 @@ export default function Submissions() {
             </span>
           </a>
         ))}
+
+        {/* See more button */}
+        {!loading && (
+          <div className="flex justify-center mt-4">
+            <a
+              href="http://10.120.4.59:4000/search?spc.page=1&spc.sf=dc.date.accessioned&spc.sd=DESC"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm font-medium text-white bg-blue-400 transition px-4 py-2 rounded-full shadow-sm"
+            >
+              See More
+              <ArrowRight className="w-4 h-4" />
+            </a>
+          </div>
+        )}
       </div>
     </section>
   );
