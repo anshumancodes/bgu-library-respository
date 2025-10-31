@@ -62,7 +62,7 @@ export default function Communities() {
         </p>
       </div>
 
-      <div className="card-content max-h-[500px] overflow-y-auto">
+      <div className="card-content max-h-[700px] bg-gray-100">
         {loading ? (
           <p className="text-center py-4 text-gray-500">Loading communities...</p>
         ) : communities.length === 0 ? (
@@ -79,7 +79,7 @@ export default function Communities() {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800">{c.name}</h3>
                   <p className="text-sm text-gray-500">
-                    {c.collectionsCount} collections
+                    {c.items} collections
                   </p>
                 </div>
               </div>
