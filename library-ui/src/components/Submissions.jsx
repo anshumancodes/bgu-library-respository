@@ -47,12 +47,14 @@ export default function Submissions() {
   }, []);
 
   return (
-    <section className="card mt-10">
-      <div className="card-header flex items-center gap-2">
-        <Calendar />
-        <h2 className="card-title">Recent Submissions</h2>
+    <section className="card sm:w-[96%] md:w-full mt-10">
+      <div className="card-header flex flex-col justify-center gap-2">
+        <div className="flex gap-2 items-center">
+          <Calendar />
+          <h2 className="card-title mt-2">Recent Submissions</h2>
+        </div>
+        <p className="card-subtitle">Latest research contributions</p>
       </div>
-      <p className="card-subtitle">Latest research contributions</p>
 
       <div
         className="card-content overflow-y-auto"
@@ -69,7 +71,7 @@ export default function Submissions() {
           <a
             key={item.id}
             href={item.link}
-            className="block submission-item flex flex-col py-2 border-b border-gray-200 hover:bg-gray-50 transition"
+            className=" submission-item flex flex-col py-2 border-b border-gray-200 hover:bg-gray-50 transition"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -86,4 +88,3 @@ export default function Submissions() {
     </section>
   );
 }
-
