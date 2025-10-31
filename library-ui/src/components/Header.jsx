@@ -43,9 +43,7 @@ export default function Header() {
 
           {/* Right section */}
           <div className="flex items-center gap-3">
-            <button className="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-200 bg-gray-50 hover:bg-blue-600 hover:text-white transition-all shadow-sm">
-              <Search size={18} />
-            </button>
+           
 
             <a
               href="http://10.120.4.59:4000/login"
